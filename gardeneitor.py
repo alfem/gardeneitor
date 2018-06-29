@@ -78,6 +78,7 @@ def switch_pump(state):
 
     print ("Switching pump ->"+str(state))
     if GPIO:
+        init_relays()
         GPIO.setup(PUMP, GPIO.OUT)
         GPIO.output(PUMP,state) 
 
@@ -86,6 +87,7 @@ def switch_pump(state):
 def switch_valve(v,state):
     print ("Switching valve "+str(v)+"->"+str(state))
     if GPIO:
+        init_relays()
         GPIO.setup(v, GPIO.OUT)
         GPIO.output(v,state) 
 
@@ -138,7 +140,7 @@ def api_program_switch(state):
         if state:
           job.enable()
         else: 
-          job.disable()
+          job.enable(False)
         cron.write()
     except StopIteration:
         return make_response("1", 200)  
