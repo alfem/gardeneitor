@@ -13,17 +13,15 @@ PROGRAM_BIN_FILENAME=APP_PATH+"/gardeneitor-program.py"
 # First relay starts the pump
 PUMP=7
 # These relays open/close the valves
-VALVES = (8, 11, 12, 15)
+RELAYS = (8, 11, 12, 15)
 # END CONFIGURATION
 
 
 def signal_handler(signal, frame):
         print('You pressed Ctrl+C!')
-        GPIO.output(VALVE_PIN, 0)
         GPIO.output(PUMP_PIN, 0)
         print " OFF "
         GPIO.cleanup()
-
         sys.exit(0)
 
 signal.signal(signal.SIGINT, signal_handler)
@@ -61,18 +59,18 @@ try:
     with open(PROGRAM_DATA_FILENAME,'r') as f:
       for line in f:
           valve,duration=line.split(" ")
-          sprinkler(valve,duration)
-
+          relay=int(valve)-1
+          sprinkler(RELAYS[relay],int(duration))
+except IOError:
+    print "ERROR READING PROGRAM FILE:", PROGRAM_DATA_FILENAME
+    pass      
 except:
-    print " ERROR READING PROGRAM FILE!"
-    pass:      
-
-#sprinkler(8,1)
-#sprinkler(11,1)
-#sprinkler(12,15)
+    print "ERROR IN PROGRAM FORMAT:", PROGRAM_DATA_FILENAME
+    pass      
+   
 
 print "Stoping pump"
 GPIO.output(PUMP, 0)
-print "PUMP OFF
+print "PUMP OFF"
 GPIO.cleanup()
 
