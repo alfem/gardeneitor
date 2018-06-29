@@ -28,7 +28,7 @@ PROGRAM_BIN_FILENAME=APP_PATH+"/gardeneitor-program.py"
 # First relay starts the pump
 PUMP=7
 # These relays open/close the valves
-VALVES = (8, 11, 12, 15)
+RELAYS = (8, 11, 12, 15)
 # END CONFIGURATION
 
 
@@ -52,8 +52,8 @@ def init_relays():
         GPIO.setmode(GPIO.BOARD)
         GPIO.setwarnings(False)
         GPIO.setup(PUMP, GPIO.OUT)
-        for v in VALVES:
-            GPIO.setup(v, GPIO.OUT)
+        for r in RELAYS:
+            GPIO.setup(r, GPIO.OUT)
 
 def reset_gpio():
   GPIO.cleanup()
@@ -66,11 +66,11 @@ def check_relays():
         GPIO.setmode(GPIO.BOARD)
         GPIO.setwarnings(False)
         GPIO.setup(PUMP, GPIO.IN)
-        for v in VALVES:
-            GPIO.setup(v, GPIO.IN)
-            status.append(GPIO.input(v))
+        for r in RELAYS:
+            GPIO.setup(r, GPIO.IN)
+            status.append(GPIO.input(r))
     else:
-        status=[False]*len(VALVES)
+        status=[False]*len(RELAY)
 
 
 # SWITCH ON/OFF PUMP
@@ -79,7 +79,6 @@ def switch_pump(state):
     print ("Switching pump ->"+str(state))
     if GPIO:
         init_relays()
-        GPIO.setup(PUMP, GPIO.OUT)
         GPIO.output(PUMP,state) 
 
 
@@ -88,8 +87,8 @@ def switch_valve(v,state):
     print ("Switching valve "+str(v)+"->"+str(state))
     if GPIO:
         init_relays()
-        GPIO.setup(v, GPIO.OUT)
-        GPIO.output(v,state) 
+        r=RELAYS[v-1] 
+        GPIO.output(r,state) 
 
 
 # Setup web app
