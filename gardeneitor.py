@@ -1,10 +1,11 @@
-#!/bin/python
+#!/usr/bin/python
 
 # GARDENEITOR
 # Raspberry Pi Garden Valves Automation and Web Interface
 # by Alfonso E.M. <alfonso@el-magnifico.org>
 
 # Requieres Flash, gpio, and python-crontab
+# (sudo pip install flash flask_bootstrap python-crontab)
 
 
 from __future__ import print_function
@@ -19,8 +20,10 @@ from flask_bootstrap import Bootstrap
 from crontab import CronTab
 
 # CONFIGURATION
-DATAPATH="/tmp"
 CRONTAB_USER='alfem'
+APP_PATH="/home/"+CRONTAB_USER/gardeneitor
+PROGRAM_DATA_FILENAME=APP_PATH+"/gardeneitor.dat"
+PROGRAM_BIN_FILENAME=APP_PATH+"/gardeneitor-program.py"
 
 # First relay starts the pump
 PUMP=7
@@ -101,20 +104,29 @@ def program_save():
     scheduleTime = request.form.get('scheduleTime')
     program = request.form.get('program')
     print ("Saving program")
-#    print (scheduleTime)
-    hh,mm=scheduleTime.split(':')
+
+    try:
+        hh,mm=scheduleTime.split(':')
+    except:
+        return make_response("", 404)
+        
 
     jobs = cron.find_comment('gardeneitor')     
     try:
         job=jobs.next()
+        job.clear()
     except StopIteration:
-        job = cron.new(command='gardeneitor-program.py', comment="gardeneitor")  
+        job = cron.new(command=PROGRAM_BIN_FILENAME+'gardeneitor-program.py', comment="gardeneitor")  
         
     job.hour.on(hh)
     job.minute.on(mm)
-    job.dow.on('SUN')  
+    for dow in ('MON','TUE','WED','THU','FRI','SAT','SUN'): 
+        if request.form.get(dow): 
+            job.dow.also.on(dow)        
     cron.write()
 
+    with open(PROGRAM_FILE,'w') as f:
+        f.write(program)
 
     return make_response("0", 200)
 
