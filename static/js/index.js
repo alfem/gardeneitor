@@ -16,6 +16,20 @@ function programSave() {
    });
 }
 
+function programRun() {
+    console.log("Runnning Program Now");
+    var url = "program-run"; 
+    callApi(url);
+}
+
+function programSwitch(status) {
+    console.log("Runnning Program Now");
+    var url = "program-switch"; 
+    url += status ? "1" : "0";
+    callApi(url);
+}
+
+
 function setPump(status) {
     console.log("Executing setPump");
     var url = "pump/"; 
