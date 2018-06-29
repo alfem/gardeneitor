@@ -130,6 +130,33 @@ def program_save():
 
     return make_response("0", 200)
 
+@app.route('/program-switch/<int:state>')
+def api_program_switch(state):
+    jobs = cron.find_comment('gardeneitor')     
+    try:
+        job=jobs.next()
+        if state:
+          job.enable()
+        else: 
+          job.disable()
+        cron.write()
+    except StopIteration:
+        return make_response("1", 200)  
+
+    return make_response("0", 200)  
+
+@app.route('/program-run')
+def api_program_run():
+    jobs = cron.find_comment('gardeneitor')     
+    try:
+        job=jobs.next()
+        job.run()
+        cron.write()
+    except StopIteration:
+        return make_response("1", 200)  
+
+    return make_response("0", 200)  
+
 
 @app.route('/pump/<int:state>')
 def api_pump(state):
