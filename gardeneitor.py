@@ -21,7 +21,7 @@ from crontab import CronTab
 
 # CONFIGURATION
 CRONTAB_USER='alfem'
-APP_PATH="/home/"+CRONTAB_USER/gardeneitor
+APP_PATH="/home/"+CRONTAB_USER+"/gardeneitor"
 PROGRAM_DATA_FILENAME=APP_PATH+"/gardeneitor.dat"
 PROGRAM_BIN_FILENAME=APP_PATH+"/gardeneitor-program.py"
 
@@ -116,7 +116,7 @@ def program_save():
         job=jobs.next()
         job.clear()
     except StopIteration:
-        job = cron.new(command=PROGRAM_BIN_FILENAME+'gardeneitor-program.py', comment="gardeneitor")  
+        job = cron.new(command=PROGRAM_BIN_FILENAME, comment="gardeneitor")  
         
     job.hour.on(hh)
     job.minute.on(mm)
@@ -125,7 +125,7 @@ def program_save():
             job.dow.also.on(dow)        
     cron.write()
 
-    with open(PROGRAM_FILE,'w') as f:
+    with open(PROGRAM_DATA_FILENAME,'w') as f:
         f.write(program)
 
     return make_response("0", 200)
