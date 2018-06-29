@@ -5,9 +5,10 @@ import signal
 import sys
 
 # CONFIGURATION
-DATA_PATH="/tmp"
-PROGRAM_FILE=DATA_PATH+"/gardeneitor.dat"
 CRONTAB_USER='alfem'
+APP_PATH="/home/"+CRONTAB_USER+"/gardeneitor"
+PROGRAM_DATA_FILENAME=APP_PATH+"/gardeneitor.dat"
+PROGRAM_BIN_FILENAME=APP_PATH+"/gardeneitor-program.py"
 
 # First relay starts the pump
 PUMP=7
@@ -51,18 +52,27 @@ def sprinkler(valve, min):
 GPIO.setmode(GPIO.BOARD)
 
 GPIO.setup(PUMP, GPIO.OUT)
-print " starting pump"
+print "Starting pump"
 GPIO.output(PUMP, 1)
-print " PUMP ON "
+print "PUMP ON"
 time.sleep(1)
 
-sprinkler(8,1)
-time.sleep(10)
-sprinkler(11,1)
-time.sleep(10)
-sprinkler(12,15)
+try:
+    with open(PROGRAM_DATA_FILENAME,'r') as f:
+      for line in f:
+          valve,duration=line.split(" ")
+          sprinkler(valve,duration)
 
-print " stoping pump"
+except:
+    print " ERROR READING PROGRAM FILE!"
+    pass:      
+
+#sprinkler(8,1)
+#sprinkler(11,1)
+#sprinkler(12,15)
+
+print "Stoping pump"
 GPIO.output(PUMP, 0)
+print "PUMP OFF
 GPIO.cleanup()
 
