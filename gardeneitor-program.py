@@ -9,6 +9,7 @@ CRONTAB_USER='alfem'
 APP_PATH="/home/"+CRONTAB_USER+"/gardeneitor"
 PROGRAM_DATA_FILENAME=APP_PATH+"/gardeneitor.dat"
 PROGRAM_BIN_FILENAME=APP_PATH+"/gardeneitor-program.py"
+LOG_FILENAME=APP_PATH+"/gardeneitor.log"
 
 # First relay starts the pump
 PUMP=7
@@ -16,6 +17,11 @@ PUMP=7
 RELAYS = (8, 11, 12, 15)
 # END CONFIGURATION
 
+
+
+def log(priority,text):
+    with open(LOG_FILENAME,"r") as log:
+      log.write(priority+": "+text)
 
 def signal_handler(signal, frame):
         print('You pressed Ctrl+C!')
@@ -52,6 +58,7 @@ GPIO.setmode(GPIO.BOARD)
 GPIO.setup(PUMP, GPIO.OUT)
 print "Starting pump"
 GPIO.output(PUMP, 1)
+log("I","Pump started (program)")
 print "PUMP ON"
 time.sleep(1)
 
@@ -60,17 +67,24 @@ try:
       for line in f:
           valve,duration=line.split(" ")
           relay=int(valve)-1
+          log("I","Opening valve "+str(valve)+" for "+str(duration)+" minutes (program)")
           sprinkler(RELAYS[relay],int(duration))
+
+
 except IOError:
     print "ERROR READING PROGRAM FILE:", PROGRAM_DATA_FILENAME
+    log("E","ERROR READING PROGRAM FILE")
+
     pass      
 except:
     print "ERROR IN PROGRAM FORMAT:", PROGRAM_DATA_FILENAME
+    log("E","ERROR IN PROGRAM FORMAT")
     pass      
    
 
 print "Stoping pump"
 GPIO.output(PUMP, 0)
+log("I","Pump stopped (program)")
 print "PUMP OFF"
 GPIO.cleanup()
 

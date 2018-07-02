@@ -22,8 +22,10 @@ from crontab import CronTab
 # CONFIGURATION
 CRONTAB_USER='alfem'
 APP_PATH="/home/"+CRONTAB_USER+"/gardeneitor"
+#APP_PATH="/home/alfem/alfem/prog/raspberry-pi/garden/gardeneitor/"
 PROGRAM_DATA_FILENAME=APP_PATH+"/gardeneitor.dat"
 PROGRAM_BIN_FILENAME=APP_PATH+"/gardeneitor-program.py"
+LOG_FILENAME=APP_PATH+"/gardeneitor.log"
 
 # First relay starts the pump
 PUMP=7
@@ -44,6 +46,9 @@ error_msg = '{msg:"error"}'
 success_msg = '{msg:"success"}'
 
 
+def log(priority,text):
+    with open(LOG_FILENAME,"r") as log:
+      log.write(priority+": "+text)
 
 # SETUP GPIO
 def init_relays():
@@ -54,6 +59,7 @@ def init_relays():
         GPIO.setup(PUMP, GPIO.OUT)
         for r in RELAYS:
             GPIO.setup(r, GPIO.OUT)
+        log("I","Relays initialized")
 
 def reset_gpio():
   GPIO.cleanup()
@@ -80,6 +86,7 @@ def switch_pump(state):
     if GPIO:
         init_relays()
         GPIO.output(PUMP,state) 
+        log("I","Pump started")
 
 
 # SWITCH ON/OFF A VALVE
@@ -89,6 +96,7 @@ def switch_valve(v,state):
         init_relays()
         r=RELAYS[v-1] 
         GPIO.output(r,state) 
+        log("I","Valve "+str(v)+" changed to "+str(state))
 
 
 # Setup web app
@@ -193,12 +201,10 @@ def api_get_status():
 
 @app.route('/log/')
 def api_get_log():
-    if res:
-        print("Relay is ON")
-        return make_response("1", 200)
-    else:
-        print("Relay is OFF")
-        return make_response("0", 200)
+   with open(LOG_FILENAME,"r") as log:
+      loglines=log.read()
+      print (loglines)
+      return make_response(loglines)
 
 
 @app.route('/stop-all/')
