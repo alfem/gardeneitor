@@ -24,7 +24,7 @@ function programRun() {
 
 function programSwitch(status) {
     console.log("Runnning Program Now");
-    var url = "program-switch"; 
+    var url = "program-switch/"; 
     url += status ? "1" : "0";
     callApi(url);
 }
@@ -63,11 +63,30 @@ function callApi(url) {
     }).fail(function () {
         console.error("Relay status failure");
         swal({
-            title: "Pi Relay Controller",
+            title: "Gardeneitor",
             text: "Server returned an error",
             type: "error"
         });
     });
+}
+function status() {
+    console.log("Executing status");
+
+    $.get("log/", function () {
+        console.log("Sent request to server");
+    }).done(function (res) {
+        console.log("Completed request");
+        $(logbox).text(res);
+    }).fail(function () {
+        console.error("Status failure");
+        swal({
+            title: "Gardeneitor",
+            text: "Server returned an error",
+            type: "error"
+        });
+    });
+
+
 }
 
 function getRelayStatus(relay) {
@@ -82,7 +101,7 @@ function getRelayStatus(relay) {
     }).fail(function () {
         console.error("Relay status failure");
         swal({
-            title: "Pi Relay Controller",
+            title: "Gardeneitor",
             text: "Server returned an error",
             type: "error"
         });
