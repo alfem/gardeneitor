@@ -20,7 +20,7 @@ RELAYS = (8, 11, 12, 15)
 
 
 def log(priority,text):
-    with open(LOG_FILENAME,"r") as log:
+    with open(LOG_FILENAME,"w+") as log:
       log.write(priority+": "+text)
 
 def signal_handler(signal, frame):
