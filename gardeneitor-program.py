@@ -3,13 +3,11 @@
 import time
 import signal
 import sys
+import ConfigParser
 
-# CONFIGURATION
-CRONTAB_USER='alfem'
-APP_PATH="/home/"+CRONTAB_USER+"/gardeneitor"
-PROGRAM_DATA_FILENAME=APP_PATH+"/gardeneitor.dat"
-PROGRAM_BIN_FILENAME=APP_PATH+"/gardeneitor-program.py"
-LOG_FILENAME=APP_PATH+"/gardeneitor.log"
+config = ConfigParser.SafeConfigParser()
+config.read("gardeneitor.ini","/etc/gardeneitor.ini")
+LOG_FILENAME=config.get("Main","log_filename")
 
 # First relay starts the pump
 PUMP=7
@@ -63,7 +61,7 @@ print "PUMP ON"
 time.sleep(1)
 
 try:
-    with open(PROGRAM_DATA_FILENAME,'r') as f:
+    with open(config.get("Main","program_data_filename"),'r') as f:
       for line in f:
           valve,duration=line.split(" ")
           relay=int(valve)-1
@@ -72,12 +70,12 @@ try:
 
 
 except IOError:
-    print "ERROR READING PROGRAM FILE:", PROGRAM_DATA_FILENAME
+    print "ERROR READING PROGRAM FILE:", config.get("Main","program_data_filename")
     log("E","ERROR READING PROGRAM FILE")
 
     pass      
 except:
-    print "ERROR IN PROGRAM FORMAT:", PROGRAM_DATA_FILENAME
+    print "ERROR IN PROGRAM FORMAT:", config.get("Main","program_data_filename")
     log("E","ERROR IN PROGRAM FORMAT")
     pass      
    

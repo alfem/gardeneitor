@@ -18,14 +18,11 @@ from flask import render_template
 from flask import request
 from flask_bootstrap import Bootstrap
 from crontab import CronTab
+import ConfigParser
 
-# CONFIGURATION
-CRONTAB_USER='alfem'
-APP_PATH="/home/"+CRONTAB_USER+"/gardeneitor"
-#APP_PATH="/home/alfem/alfem/prog/raspberry-pi/garden/gardeneitor/"
-PROGRAM_DATA_FILENAME=APP_PATH+"/gardeneitor.dat"
-PROGRAM_BIN_FILENAME=APP_PATH+"/gardeneitor-program.py"
-LOG_FILENAME=APP_PATH+"/gardeneitor.log"
+config = ConfigParser.SafeConfigParser()
+config.read(("gardeneitor.ini","/etc/gardeneitor.ini"))
+LOG_FILENAME=config.get("Main","log_filename")
 
 # First relay starts the pump
 PUMP=7
@@ -34,7 +31,8 @@ RELAYS = (8, 11, 12, 15)
 # END CONFIGURATION
 
 
-cron = CronTab(user=CRONTAB_USER)  
+
+cron = CronTab(user=config.get("Main","crontab_user"))  
 
 try:
     import RPi.GPIO as GPIO
@@ -125,7 +123,7 @@ def program_save():
         job=jobs.next()
         job.clear()
     except StopIteration:
-        job = cron.new(command=PROGRAM_BIN_FILENAME, comment="gardeneitor")  
+        job = cron.new(command=config.get("Main","program_bin_filename"), comment="gardeneitor")  
         
     job.hour.on(hh)
     job.minute.on(mm)
@@ -134,7 +132,7 @@ def program_save():
             job.dow.also.on(dow)        
     cron.write()
 
-    with open(PROGRAM_DATA_FILENAME,'w') as f:
+    with open(config.get("Main","program_data_filename"),'w') as f:
         f.write(program)
 
     return make_response("0", 200)
