@@ -12,14 +12,14 @@
     <p>Start and stop every valve manually, or run the scheduled program if desired. Emergency stop closed all the valves and stop the pump. Power off button shutdowns the whole server.</p>
 
 <ul class="nav nav-tabs">
-  <li class="active"><a data-toggle="tab" href="#actions">Actions</a></li>
-  <li><a data-toggle="tab" href="#program">Program</a></li>
-  <li><a data-toggle="tab" href="#log">Log</a></li>
+  <li class="active"><a data-toggle="tab" href="#tabactions">Actions</a></li>
+  <li><a data-toggle="tab" href="#tabprogram">Program</a></li>
+  <li><a data-toggle="tab" href="#tablog">Log</a></li>
 </ul>
 
 <div class="tab-content">
 
-  <div id="actions" class="tab-pane fade in active">
+  <div id="tabactions" class="tab-pane fade in active">
 
     <table class="table table-bordered">
         <tbody>
@@ -107,7 +107,7 @@
 
   </div>
 
-  <div id="program" class="tab-pane fade">
+  <div id="tabprogram" class="tab-pane fade">
   <form id=programForm>
     <table class="table table-bordered">
         <tbody>
@@ -126,15 +126,15 @@
          <tr>
             <th scope="row">Schedule</th>
             <td>
-                <label class="checkbox-inline"><input name='MON' type="checkbox" value="1">Mon</label>
-                <label class="checkbox-inline"><input name='TUE' type="checkbox" value="1">Tue</label>
-                <label class="checkbox-inline"><input name='WED' type="checkbox" value="1">Wed</label> 
-                <label class="checkbox-inline"><input name='THU' type="checkbox" value="1">Tue</label>
-                <label class="checkbox-inline"><input name='FRI' type="checkbox" value="1">Fri</label>
-                <label class="checkbox-inline"><input name='SAT' type="checkbox" value="1">Sat</label> 
-                <label class="checkbox-inline"><input name='SUN' type="checkbox" value="1">Sun</label> 
+                <label class="checkbox-inline"><input name='MON' id="cb_mon" type="checkbox" value="0">Mon</label>
+                <label class="checkbox-inline"><input name='TUE' id="cb_tue" type="checkbox" value="0">Tue</label>
+                <label class="checkbox-inline"><input name='WED' id="cb_wed" type="checkbox" value="0">Wed</label> 
+                <label class="checkbox-inline"><input name='THU' id="cb_thu" type="checkbox" value="0">Tue</label>
+                <label class="checkbox-inline"><input name='FRI' id="cb_fri" type="checkbox" value="0">Fri</label>
+                <label class="checkbox-inline"><input name='SAT' id="cb_sat" type="checkbox" value="0">Sat</label> 
+                <label class="checkbox-inline"><input name='SUN' id="cb_sun" type="checkbox" value="0">Sun</label> 
 <label class="checkbox-inline">Time:
-                <input type="time" name="scheduleTime" placeholder="hr:min" pattern="^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$" class="inputs time" required></label>
+                <input id="hhmm" type="time" name="scheduleTime" placeholder="hr:min" class="inputs time" required></label>
             </td>
          </tr>
 
@@ -144,7 +144,7 @@
 
              <div class="form-group">
               <label for="comment">One line per valve, in this format: valve minutes</label>
-              <textarea name="program" class="form-control" rows="5" id="comment"></textarea>
+              <textarea id="program" name="program" class="form-control" rows="5" id="comment"></textarea>
             </div> 
             </td>
 
@@ -156,7 +156,7 @@
 
 
 
-  <div id="log" class="tab-pane fade">
+  <div id="tablog" class="tab-pane fade">
   <h1>Log</h1>
   <div id="logbox" class="pre-scrollable">Log goes here</div>  
 

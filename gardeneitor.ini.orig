@@ -1,0 +1,7 @@
+# GARDENEITOR CONFIGURATION FILE
+[Main]
+crontab_user: pi
+app_path: /home/pi/gardeneitor
+program_data_filename=/home/pi/gardeneitor/gardeneitor.dat
+program_bin_filename=/home/pi/gardeneitor/gardeneitor-program.py
+log_filename=/home/pi/gardeneitor/gardeneitor.log

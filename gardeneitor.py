@@ -16,6 +16,7 @@ from flask import Flask
 from flask import make_response
 from flask import render_template
 from flask import request
+from flask import jsonify
 from flask_bootstrap import Bootstrap
 from crontab import CronTab
 import ConfigParser
@@ -137,6 +138,29 @@ def program_save():
 
     return make_response("0", 200)
 
+
+@app.route('/program-read', methods=('get', 'post'))
+def program_read():
+    print ("Reading program")
+
+    jobs = cron.find_comment('gardeneitor')     
+    try:
+        job=jobs.next()
+    except StopIteration:
+        return make_response("")
+        
+    hour=str(job.hour)
+    minute=str(job.minute)
+    dow=str(job.dow)        
+
+    print ("Crontab:"+hour+":"+minute+"->"+dow)
+
+    with open(config.get("Main","program_data_filename"),'r') as f:
+        program=f.read()
+
+    return jsonify({'hour': hour, 'minute': minute, 'dow': dow, 'program':program})
+
+
 @app.route('/program-switch/<int:state>')
 def api_program_switch(state):
     jobs = cron.find_comment('gardeneitor')     
@@ -197,7 +221,7 @@ def api_get_status():
         return make_response("0", 200)
 
 
-@app.route('/log/')
+@app.route('/log')
 def api_get_log():
    with open(LOG_FILENAME,"r") as log:
       loglines=log.read()

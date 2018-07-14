@@ -72,11 +72,44 @@ function callApi(url) {
 function status() {
     console.log("Executing status");
 
-    $.get("log/", function () {
+    $.get("log", function () {
         console.log("Sent request to server");
     }).done(function (res) {
         console.log("Completed request");
         $(logbox).text(res);
+    }).fail(function () {
+        console.error("Status failure");
+        swal({
+            title: "Gardeneitor",
+            text: "Server returned an error",
+            type: "error"
+        });
+    });
+
+
+    $.get("program-read", function () {
+        console.log("Sent request to server");
+    }).done(function (res) {
+        console.log("Completed request");
+
+
+        $("#cb_mon").prop("checked", false);
+        $("#cb_tue").prop("checked", false);
+        $("#cb_wed").prop("checked", false);
+        $("#cb_thu").prop("checked", false);
+        $("#cb_fri").prop("checked", false);
+        $("#cb_sat").prop("checked", false);
+        $("#cb_sun").prop("checked", false);
+        if (res.dow.includes("MON")) $("#cb_mon").prop("checked", true);
+        if (res.dow.includes("TUE")) $("#cb_tue").prop("checked", true);
+        if (res.dow.includes("WED")) $("#cb_wed").prop("checked", true);
+        if (res.dow.includes("THU")) $("#cb_THU").prop("checked", true);
+        if (res.dow.includes("FRI")) $("#cb_fri").prop("checked", true);
+        if (res.dow.includes("SAT")) $("#cb_sat").prop("checked", true);
+        if (res.dow.includes("SUN")) $("#cb_sun").prop("checked", true);
+        document.getElementById("hhmm").value=res.hour+":"+res.minute;
+        $(program).text(res.program);
+
     }).fail(function () {
         console.error("Status failure");
         swal({
