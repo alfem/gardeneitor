@@ -6,7 +6,7 @@ import sys
 import ConfigParser
 
 config = ConfigParser.SafeConfigParser()
-config.read("gardeneitor.ini","/etc/gardeneitor.ini")
+config.read(("gardeneitor.ini","/etc/gardeneitor.ini"))
 LOG_FILENAME=config.get("Main","log_filename")
 
 # First relay starts the pump
