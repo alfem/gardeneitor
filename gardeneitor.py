@@ -46,7 +46,7 @@ success_msg = '{msg:"success"}'
 
 
 def log(priority,text):
-    with open(LOG_FILENAME,"w+") as log:
+    with open(LOG_FILENAME,"a") as log:
       log.write(priority+": "+text)
 
 # SETUP GPIO
