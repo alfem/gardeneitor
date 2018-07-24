@@ -19,7 +19,7 @@ RELAYS = (8, 11, 12, 15)
 
 def log(priority,text):
     with open(LOG_FILENAME,"a") as log:
-      log.write(priority+": "+text)
+      log.write(priority+": "+text+"\n")
 
 def signal_handler(signal, frame):
         print('You pressed Ctrl+C!')
