@@ -63,10 +63,11 @@ time.sleep(1)
 try:
     with open(config.get("Main","program_data_filename"),'r') as f:
       for line in f:
-          valve,duration=line.split(" ")
-          relay=int(valve)-1
-          log("I","Opening valve "+str(valve)+" for "+str(duration)+" minutes (program)")
-          sprinkler(RELAYS[relay],int(duration))
+          v,d=line.split(" ")
+          relay=int(v)-1
+          duration=int(d)
+          log("I","Opening valve "+v+" for "+d+" minutes (program)")
+          sprinkler(RELAYS[relay],duration)
 
 
 except IOError:
