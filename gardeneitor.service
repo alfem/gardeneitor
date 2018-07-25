@@ -1,0 +1,11 @@
+#Service for GARDENEITOR
+#
+[Unit]
+Description=GARDENEITOR
+After=syslog.target network.target
+[Service]
+ExecStart=/usr/bin/python /home/pi/gardeneitor/gardeneitor.py
+Restart=on-abort
+WorkingDirectory=/home/pi/gardeneitor/
+[Install]
+WantedBy=multi-user.target
