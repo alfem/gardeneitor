@@ -103,7 +103,7 @@ function status() {
         if (res.dow.includes("MON")) $("#cb_mon").prop("checked", true);
         if (res.dow.includes("TUE")) $("#cb_tue").prop("checked", true);
         if (res.dow.includes("WED")) $("#cb_wed").prop("checked", true);
-        if (res.dow.includes("THU")) $("#cb_THU").prop("checked", true);
+        if (res.dow.includes("THU")) $("#cb_thu").prop("checked", true);
         if (res.dow.includes("FRI")) $("#cb_fri").prop("checked", true);
         if (res.dow.includes("SAT")) $("#cb_sat").prop("checked", true);
         if (res.dow.includes("SUN")) $("#cb_sun").prop("checked", true);
