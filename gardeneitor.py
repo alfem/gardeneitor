@@ -77,6 +77,7 @@ def check_relays():
     else:
         status=[False]*len(RELAY)
 
+   return status
 
 # SWITCH ON/OFF PUMP
 def switch_pump(state):
@@ -212,14 +213,9 @@ def api_valve(valve,state):
 
 @app.route('/status/')
 def api_get_status():
-    res = relay_get_port_status(relay)
-    if res:
-        print("Relay is ON")
-        return make_response("1", 200)
-    else:
-        print("Relay is OFF")
-        return make_response("0", 200)
-
+    status = check_status()
+    print (status) 
+    return make_response(status, 200)
 
 @app.route('/log')
 def api_get_log():
