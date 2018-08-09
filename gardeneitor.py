@@ -77,7 +77,7 @@ def check_relays():
     else:
         status=[False]*len(RELAY)
 
-   return status
+    return status
 
 # SWITCH ON/OFF PUMP
 def switch_pump(state):
