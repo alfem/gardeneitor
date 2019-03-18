@@ -47,7 +47,7 @@ success_msg = '{msg:"success"}'
 
 def log(priority,text):
     with open(LOG_FILENAME,"a") as log:
-      log.write(priority+": "+text+"\n")
+      log.write(time.strftime("%Y/%m/%d %a %X ",time.localtime())+priority+": "+text+"\n")
 
 # SETUP GPIO
 def init_relays():
@@ -77,6 +77,7 @@ def check_relays():
     else:
         status=[False]*len(RELAY)
 
+    return status
 
 # SWITCH ON/OFF PUMP
 def switch_pump(state):
@@ -98,8 +99,42 @@ def switch_valve(v,state):
         log("I","Valve "+str(v)+" changed to "+str(state))
 
 
+class ReverseProxied(object):
+    '''Wrap the application in this middleware and configure the 
+    front-end server to add these headers, to let you quietly bind 
+    this to a URL other than / and to an HTTP scheme that is 
+    different than what is used locally.
+
+    In nginx:
+    location /myprefix {
+        proxy_pass http://192.168.0.1:5001;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Scheme $scheme;
+        proxy_set_header X-Script-Name /myprefix;
+        }
+
+    :param app: the WSGI application
+    '''
+    def __init__(self, app):
+        self.app = app
+
+    def __call__(self, environ, start_response):
+        script_name = environ.get('HTTP_X_SCRIPT_NAME', '')
+        if script_name:
+            environ['SCRIPT_NAME'] = script_name
+            path_info = environ['PATH_INFO']
+            if path_info.startswith(script_name):
+                environ['PATH_INFO'] = path_info[len(script_name):]
+
+        scheme = environ.get('HTTP_X_SCHEME', '')
+        if scheme:
+            environ['wsgi.url_scheme'] = scheme
+        return self.app(environ, start_response)
+
 # Setup web app
 app = Flask(__name__)
+app.wsgi_app = ReverseProxied(app.wsgi_app)
 bootstrap = Bootstrap(app)
 
 
@@ -212,14 +247,9 @@ def api_valve(valve,state):
 
 @app.route('/status/')
 def api_get_status():
-    res = relay_get_port_status(relay)
-    if res:
-        print("Relay is ON")
-        return make_response("1", 200)
-    else:
-        print("Relay is OFF")
-        return make_response("0", 200)
-
+    status = check_status()
+    print (status) 
+    return make_response(status, 200)
 
 @app.route('/log')
 def api_get_log():
