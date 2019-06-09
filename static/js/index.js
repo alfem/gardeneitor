@@ -69,29 +69,18 @@ function callApi(url) {
         });
     });
 }
-function status() {
+
+function getStatus() {
     console.log("Executing status");
+}
 
-    $.get("log", function () {
-        console.log("Sent request to server");
-    }).done(function (res) {
-        console.log("Completed request");
-        $(logbox).text(res);
-    }).fail(function () {
-        console.error("Status failure");
-        swal({
-            title: "Gardeneitor",
-            text: "Server returned an error",
-            type: "error"
-        });
-    });
-
+function getProgram() {
+    console.log("Executing getProgram");
 
     $.get("program-read", function () {
         console.log("Sent request to server");
     }).done(function (res) {
         console.log("Completed request");
-
 
         $("#cb_mon").prop("checked", false);
         $("#cb_tue").prop("checked", false);
@@ -118,9 +107,26 @@ function status() {
             type: "error"
         });
     });
-
-
 }
+
+function getLog() {
+    console.log("Executing getLog");
+
+    $.get("log", function () {
+        console.log("Sent request to server");
+    }).done(function (res) {
+        console.log("Completed request");
+        $(logbox).text(res);
+    }).fail(function () {
+        console.error("Status failure");
+        swal({
+            title: "Gardeneitor",
+            text: "Server returned an error",
+            type: "error"
+        });
+    });
+}
+
 
 function getRelayStatus(relay) {
     console.log("Executing getRelayStatus");
