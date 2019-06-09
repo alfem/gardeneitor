@@ -4,6 +4,7 @@ import time
 import signal
 import sys
 import ConfigParser
+import re
 
 config = ConfigParser.SafeConfigParser()
 config.read(("gardeneitor.ini","/etc/gardeneitor.ini"))
@@ -19,7 +20,7 @@ RELAYS = (8, 11, 12, 15)
 
 def log(priority,text):
     with open(LOG_FILENAME,"a") as log:
-      log.write(priority+": "+text+"\n")
+      log.write(time.strftime("%Y/%m/%d %a %X ",time.localtime())+priority+": "+text+"\n")
 
 def signal_handler(signal, frame):
         print('You pressed Ctrl+C!')
@@ -63,13 +64,17 @@ time.sleep(1)
 try:
     with open(config.get("Main","program_data_filename"),'r') as f:
       for line in f:
-          v,d=line.split(" ")
-          relay=int(v)-1
-          duration=int(d)
-          log("I","Opening valve "+v+" for "+d+" minutes (program)")
-          sprinkler(RELAYS[relay],duration)
-
-
+          parsed=re.match("(\d+)\s+(\d+)",line)
+          if parsed:
+            v=parsed.group(1)
+            d=parsed.group(2)
+  #          v,d=line.split(" ")
+            relay=int(v)-1
+            duration=int(d)
+            log("I","Opening valve "+v+" for "+d+" minutes (program)")
+            sprinkler(RELAYS[relay],duration)
+          else:
+            log("E","WRONG LINE IN WATERING PROGRAM "+line)
 except IOError:
     print "ERROR READING PROGRAM FILE:", config.get("Main","program_data_filename")
     log("E","ERROR READING PROGRAM FILE")
