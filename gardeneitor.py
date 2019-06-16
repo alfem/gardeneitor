@@ -86,7 +86,11 @@ def switch_pump(state):
     if GPIO:
         init_relays()
         GPIO.output(PUMP,state) 
-        log("I","Pump started")
+        if state == 0: 
+
+          log("I","Pump stopped")
+        else: 
+          log("I","Pump started")
 
 
 # SWITCH ON/OFF A VALVE
@@ -226,7 +230,7 @@ def api_program_run():
 
 @app.route('/pump/<int:state>')
 def api_pump(state):
-    switch_pump(True)
+    switch_pump(state)
     if state:
         print("PUMP ON")
         return make_response("1", 200)
