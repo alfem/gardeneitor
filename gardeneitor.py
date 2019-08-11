@@ -24,6 +24,7 @@ import time
 config = ConfigParser.SafeConfigParser()
 config.read(("gardeneitor.ini","/etc/gardeneitor.ini"))
 LOG_FILENAME=config.get("Main","log_filename")
+import psutil
 
 # First relay starts the pump
 PUMP=7
@@ -64,13 +65,14 @@ def reset_gpio():
   GPIO.cleanup()
 
 # CHECK GPIO STATE
-def check_relays():
+def check_status():
 
     status=[] 
     if GPIO:
         GPIO.setmode(GPIO.BOARD)
         GPIO.setwarnings(False)
         GPIO.setup(PUMP, GPIO.IN)
+        status.append(GPIO.input(PUMP))
         for r in RELAYS:
             GPIO.setup(r, GPIO.IN)
             status.append(GPIO.input(r))
@@ -227,6 +229,22 @@ def api_program_run():
 
     return make_response("0", 200)  
 
+@app.route('/program-state')
+def api_program_state():
+    jobs = cron.find_comment('gardeneitor')     
+    return make_response("1", 200)  
+
+    return make_response("0", 200)  
+
+@app.route('/program-run-state')
+def api_program_run_state():
+
+# I do not know why psutil shortens the program name
+    if ("gardeneitor-pro" in (p.name() for p in psutil.process_iter()) ):
+      return make_response("1", 200)  
+    else:
+      return make_response("0", 200)  
+
 
 @app.route('/pump/<int:state>')
 def api_pump(state):
@@ -253,12 +271,13 @@ def api_valve(valve,state):
 def api_get_status():
     status = check_status()
     print (status) 
-    return make_response(status, 200)
+    return jsonify(status=status)
 
 @app.route('/log')
 def api_get_log():
    with open(LOG_FILENAME,"r") as log:
-      loglines=log.read()
+#      loglines=log.read()
+      loglines=tail(log,10)     
       print (loglines)
       return make_response(loglines)
 
@@ -282,6 +301,37 @@ def page_not_found(e):
 def internal_server_error(e):
     print("ERROR: 500")
     return render_template('500.html', the_error=e), 500
+
+
+
+# Tail file function: https://stackoverflow.com/questions/136168/get-last-n-lines-of-a-file-with-python-similar-to-tail
+def tail( f, lines=20 ):
+    total_lines_wanted = lines
+
+    BLOCK_SIZE = 1024
+    f.seek(0, 2)
+    block_end_byte = f.tell()
+    lines_to_go = total_lines_wanted
+    block_number = -1
+    blocks = [] # blocks of size BLOCK_SIZE, in reverse order starting
+                # from the end of the file
+    while lines_to_go > 0 and block_end_byte > 0:
+        if (block_end_byte - BLOCK_SIZE > 0):
+            # read the last block we haven't yet read
+            f.seek(block_number*BLOCK_SIZE, 2)
+            blocks.append(f.read(BLOCK_SIZE))
+        else:
+            # file too small, start from begining
+            f.seek(0,0)
+            # only read what was not read
+            blocks.append(f.read(block_end_byte))
+        lines_found = blocks[-1].count('\n')
+        lines_to_go -= lines_found
+        block_end_byte -= BLOCK_SIZE
+        block_number -= 1
+    all_read_text = ''.join(reversed(blocks))
+    return '\n'.join(all_read_text.splitlines()[-total_lines_wanted:])
+
 
 
 if __name__ == "__main__":
